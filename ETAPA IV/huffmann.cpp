@@ -5,7 +5,7 @@ using namespace std;
 
 struct CharCode
 {
-    char ch;
+    std::string ch;
     string code;
 };
 
@@ -30,8 +30,8 @@ void buildHuffmanTree(MinHeap &minHeap, CharCode *huffmanCode)
         Node *left = minHeap.extractMin();
         Node *right = minHeap.extractMin();
 
-        int sum = left->freq + right->freq;
-        minHeap.insert(new Node{'\0', sum, left, right});
+        double sum = left->prob + right->prob;  // Cambio de int a double
+        minHeap.insert(new Node{"\0", sum, left, right});
     }
 
     Node *root = minHeap.extractMin();
@@ -49,20 +49,26 @@ void buildHuffmanTree(MinHeap &minHeap, CharCode *huffmanCode)
 
 void codificarPalabra(const CharCode *huffmanCode, int huffmanCodeSize)
 {
-    // Pregunta al usuario por una palabra
-    cout << "Ingrese una palabra: ";
+    // Pregunta al usuario por una palabra con caracteres árabes
+    cout << "Ingrese una palabra con caracteres árabes: ";
     string palabra;
     getline(cin, palabra);
 
     // Codifica la palabra ingresada
     string textoCodificado;
-    for (char caracter : palabra)
+    size_t longitudCaracterArabe = 2; // Longitud esperada de un carácter árabe en formato "\uXXXX"
+
+    for (size_t i = 0; i < palabra.size(); i += longitudCaracterArabe)
     {
-        for (int i = 0; i < huffmanCodeSize; ++i)
+        // Extrae el carácter árabe completo
+        string caracterArabe = palabra.substr(i, longitudCaracterArabe);
+
+        // Realiza la comparación y concatena el código correspondiente
+        for (int j = 0; j < huffmanCodeSize; ++j)
         {
-            if (huffmanCode[i].ch == caracter)
+            if (huffmanCode[j].ch == caracterArabe)
             {
-                textoCodificado += huffmanCode[i].code;
+                textoCodificado += huffmanCode[j].code;
                 break;
             }
         }
@@ -75,9 +81,9 @@ void codificarPalabra(const CharCode *huffmanCode, int huffmanCodeSize)
 int main()
 {
     // Crear nodos independientes
-    Node *nodeA = new Node{'A', 1, nullptr, nullptr};
-    Node *nodeB = new Node{'B', 3, nullptr, nullptr};
-    Node *nodeC = new Node{'C', 7, nullptr, nullptr};
+    Node *nodeA = new Node{"\u062A", 0.1, nullptr, nullptr};  // Cambio de int a double
+    Node *nodeB = new Node{"\u0628", 0.3, nullptr, nullptr};  // Cambio de int a double
+    Node *nodeC = new Node{"\u0627", 0.7, nullptr, nullptr};  // Cambio de int a double
 
     // Crear el montículo e insertar los nodos
     MinHeap minHeap;
@@ -89,8 +95,8 @@ int main()
 
     buildHuffmanTree(minHeap, huffmanCode);
 
-    // Aqui se puede llamar esta funcion para codificar. Lo haremos en la ETAPA V
-    // codificarPalabra(huffmanCode, 3);
+    // Aquí se puede llamar esta función para codificar. Lo haremos en la ETAPA V
+    //codificarPalabra(huffmanCode, 3);
 
     return 0;
 }
